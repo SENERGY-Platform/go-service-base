@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package logger
+package srv_base
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func (e LogFileError) Error() string {
 	return e.msg
 }
 
-func Init(config Config) (out *os.File, err error) {
+func InitLogger(config Config) (out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
 	if config.Utc {
 		flags = flags | log.LUTC

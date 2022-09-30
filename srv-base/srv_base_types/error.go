@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package types
+package srv_base_types
 
 import "fmt"
 
