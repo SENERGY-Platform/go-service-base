@@ -21,31 +21,38 @@ import (
 	"syscall"
 )
 
-type ShutdownSignals map[os.Signal]struct{}
+type SignalSet map[os.Signal]struct{}
 
-func (s ShutdownSignals) Add(sig os.Signal) {
+func NewSignalSet(signals ...os.Signal) (stSigs SignalSet) {
+	stSigs = make(SignalSet)
+	if signals != nil && len(signals) > 0 {
+		for _, sig := range signals {
+			stSigs.Add(sig)
+		}
+	}
+	return
+}
+
+func (s SignalSet) Add(sig os.Signal) {
 	s[sig] = struct{}{}
 }
 
-func (s ShutdownSignals) Remove(sig os.Signal) {
+func (s SignalSet) Remove(sig os.Signal) {
 	delete(s, sig)
 }
 
-func (s ShutdownSignals) Has(sig os.Signal) bool {
+func (s SignalSet) Has(sig os.Signal) bool {
 	if _, ok := s[sig]; ok {
 		return true
 	}
 	return false
 }
 
-func (s ShutdownSignals) ToSlice() (sl []os.Signal) {
+func (s SignalSet) ToSlice() (sl []os.Signal) {
 	for sig := range s {
 		sl = append(sl, sig)
 	}
 	return sl
 }
 
-var DefaultSignals = ShutdownSignals{
-	syscall.SIGINT:  struct{}{},
-	syscall.SIGTERM: struct{}{},
-}
+var DefaultShutdownSignals = NewSignalSet(syscall.SIGINT, syscall.SIGTERM)

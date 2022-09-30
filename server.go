@@ -31,7 +31,7 @@ const (
 	startFailedMsg = "starting server failed: "
 )
 
-func handleShutdown(server *http.Server, signals ShutdownSignals) {
+func handleShutdown(server *http.Server, signals SignalSet) {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, signals.ToSlice()...)
 	go func() {
@@ -46,7 +46,7 @@ func handleShutdown(server *http.Server, signals ShutdownSignals) {
 	}()
 }
 
-func Start(server *http.Server, listener net.Listener, signals ShutdownSignals) {
+func Start(server *http.Server, listener net.Listener, signals SignalSet) {
 	Logger.Info(startMsg + " ...")
 	handleShutdown(server, signals)
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
@@ -56,7 +56,7 @@ func Start(server *http.Server, listener net.Listener, signals ShutdownSignals) 
 	}
 }
 
-func StartTLS(server *http.Server, listener net.Listener, signals ShutdownSignals, certFile string, keyFile string) {
+func StartTLS(server *http.Server, listener net.Listener, signals SignalSet, certFile string, keyFile string) {
 	Logger.Info(startMsg + " with TLS ...")
 	handleShutdown(server, signals)
 	if err := server.ServeTLS(listener, certFile, keyFile); err != nil && err != http.ErrServerClosed {
