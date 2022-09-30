@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package srv_base
+package server
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/go-service-base/logger"
+	"github.com/SENERGY-Platform/go-service-base/types"
 	"net"
 	"net/http"
 	"os"
@@ -31,37 +33,37 @@ const (
 	startFailedMsg = "starting server failed: "
 )
 
-func handleShutdown(server *http.Server, signals SignalSet) {
+func handleShutdown(server *http.Server, signals types.SignalSet) {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, signals.ToSlice()...)
 	go func() {
 		sig := <-shutdown
-		Logger.Warningf("received signal '%s'", sig)
-		Logger.Info("initiating shutdown ...")
+		logger.Logger.Warningf("received signal '%s'", sig)
+		logger.Logger.Info("initiating shutdown ...")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := server.Shutdown(ctx); err != nil {
-			Logger.Error("server forced to shutdown: ", err)
+			logger.Logger.Error("server forced to shutdown: ", err)
 		}
 	}()
 }
 
-func Start(server *http.Server, listener net.Listener, signals SignalSet) {
-	Logger.Info(startMsg + " ...")
+func Start(server *http.Server, listener net.Listener, signals types.SignalSet) {
+	logger.Logger.Info(startMsg + " ...")
 	handleShutdown(server, signals)
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		Logger.Error(startFailedMsg, err)
+		logger.Logger.Error(startFailedMsg, err)
 	} else {
-		Logger.Info(shutdownMsg)
+		logger.Logger.Info(shutdownMsg)
 	}
 }
 
-func StartTLS(server *http.Server, listener net.Listener, signals SignalSet, certFile string, keyFile string) {
-	Logger.Info(startMsg + " with TLS ...")
+func StartTLS(server *http.Server, listener net.Listener, signals types.SignalSet, certFile string, keyFile string) {
+	logger.Logger.Info(startMsg + " with TLS ...")
 	handleShutdown(server, signals)
 	if err := server.ServeTLS(listener, certFile, keyFile); err != nil && err != http.ErrServerClosed {
-		Logger.Error(startFailedMsg, err)
+		logger.Logger.Error(startFailedMsg, err)
 	} else {
-		Logger.Info(shutdownMsg)
+		logger.Logger.Info(shutdownMsg)
 	}
 }

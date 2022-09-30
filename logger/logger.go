@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package srv_base
+package logger
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ import (
 
 var Logger *log_level.Logger
 
-type LoggerConfig struct {
+type Config struct {
 	Level        level.Level `json:"level" env_var:"LOGGER_LEVEL"`
 	Utc          bool        `json:"utc" env_var:"LOGGER_UTC"`
 	Path         string      `json:"path" env_var:"LOGGER_PATH"`
@@ -45,7 +45,7 @@ func (e LogFileError) Error() string {
 	return e.msg
 }
 
-func InitLogger(config LoggerConfig) (out *os.File, err error) {
+func Init(config Config) (out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
 	if config.Utc {
 		flags = flags | log.LUTC

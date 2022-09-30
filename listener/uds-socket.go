@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package srv_base
+package listener
 
 import (
 	"io/fs"
@@ -31,7 +31,7 @@ func clean(path string) (err error) {
 	return
 }
 
-func NewUnixListener(path string, uid int, gid int, mode fs.FileMode) (listener *net.UnixListener, err error) {
+func NewUnix(path string, uid int, gid int, mode fs.FileMode) (listener *net.UnixListener, err error) {
 	if err = clean(path); err != nil {
 		return
 	}
