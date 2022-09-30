@@ -20,19 +20,27 @@ import (
 	"encoding/json"
 	"github.com/y-du/go-env-loader"
 	"github.com/y-du/go-log-level/level"
+	"io/fs"
 	"os"
 	"reflect"
+	"strconv"
 )
 
 var logLevelParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
 	return level.Parse(val)
 }
 
-var typeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(level.Off): logLevelParser,
+var fileModeParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+	fm, err := strconv.ParseInt(val, 8, 32)
+	return fs.FileMode(fm), err
 }
 
-func LoadConfig(path *string, cfg any) error {
+var defaultTypeParsers = map[reflect.Type]envldr.Parser{
+	reflect.TypeOf(level.Off):   logLevelParser,
+	reflect.TypeOf(fs.ModePerm): fileModeParser,
+}
+
+func LoadConfig(path *string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
 	if path != nil {
 		file, err := os.Open(*path)
 		if err != nil {
@@ -44,5 +52,14 @@ func LoadConfig(path *string, cfg any) error {
 			return err
 		}
 	}
-	return envldr.LoadEnvUserParser(cfg, nil, typeParsers, nil)
+	if envTypeParsers == nil {
+		envTypeParsers = defaultTypeParsers
+	} else {
+		for r, parser := range defaultTypeParsers {
+			if _, ok := envTypeParsers[r]; !ok {
+				envTypeParsers[r] = parser
+			}
+		}
+	}
+	return envldr.LoadEnvUserParser(cfg, envKeywordParsers, envTypeParsers, envKindParsers)
 }
