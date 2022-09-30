@@ -18,7 +18,7 @@ package srv_base
 
 import (
 	"context"
-	"github.com/SENERGY-Platform/go-service-base/srv-base/srv_base_types"
+	"github.com/SENERGY-Platform/go-service-base/srv-base/types"
 	"net"
 	"net/http"
 	"os"
