@@ -25,8 +25,6 @@ import (
 	"path"
 )
 
-var Logger *log_level.Logger
-
 type LoggerConfig struct {
 	Level        level.Level `json:"level" env_var:"LOGGER_LEVEL"`
 	Utc          bool        `json:"utc" env_var:"LOGGER_UTC"`
@@ -38,14 +36,18 @@ type LoggerConfig struct {
 }
 
 type LogFileError struct {
-	msg string
+	err error
 }
 
-func (e LogFileError) Error() string {
-	return e.msg
+func (e *LogFileError) Error() string {
+	return e.err.Error()
 }
 
-func InitLogger(config LoggerConfig) (out *os.File, err error) {
+func (e *LogFileError) Unwrap() error {
+	return e.err
+}
+
+func NewLogger(config LoggerConfig) (logger *log_level.Logger, out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
 	if config.Utc {
 		flags = flags | log.LUTC
@@ -58,10 +60,10 @@ func InitLogger(config LoggerConfig) (out *os.File, err error) {
 	} else {
 		out, err = os.OpenFile(path.Join(config.Path, fmt.Sprintf("%s.log", config.FileName)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			err = &LogFileError{msg: fmt.Sprintf("log file error: %s", err)}
+			err = &LogFileError{err: err}
 			return
 		}
 	}
-	Logger, err = log_level.New(log.New(out, config.Prefix, flags), config.Level)
+	logger, err = log_level.New(log.New(out, config.Prefix, flags), config.Level)
 	return
 }

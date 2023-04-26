@@ -19,6 +19,7 @@ package srv_base
 import (
 	"context"
 	"github.com/SENERGY-Platform/go-service-base/srv-base/types"
+	log_level "github.com/y-du/go-log-level"
 	"net"
 	"net/http"
 	"os"
@@ -32,37 +33,37 @@ const (
 	startFailedMsg = "starting server failed: "
 )
 
-func handleShutdown(server *http.Server, signals srv_base_types.SignalSet) {
+func handleShutdown(server *http.Server, signals srv_base_types.SignalSet, logger *log_level.Logger) {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, signals.ToSlice()...)
 	go func() {
 		sig := <-shutdown
-		Logger.Warningf("received signal '%s'", sig)
-		Logger.Info("initiating shutdown ...")
+		logger.Warningf("received signal '%s'", sig)
+		logger.Info("initiating shutdown ...")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := server.Shutdown(ctx); err != nil {
-			Logger.Error("server forced to shutdown: ", err)
+			logger.Error("server forced to shutdown: ", err)
 		}
 	}()
 }
 
-func StartServer(server *http.Server, listener net.Listener, signals srv_base_types.SignalSet) {
-	Logger.Info(startMsg + " ...")
-	handleShutdown(server, signals)
+func StartServer(server *http.Server, listener net.Listener, signals srv_base_types.SignalSet, logger *log_level.Logger) {
+	logger.Info(startMsg + " ...")
+	handleShutdown(server, signals, logger)
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		Logger.Error(startFailedMsg, err)
+		logger.Error(startFailedMsg, err)
 	} else {
-		Logger.Info(shutdownMsg)
+		logger.Info(shutdownMsg)
 	}
 }
 
-func StartServerTLS(server *http.Server, listener net.Listener, signals srv_base_types.SignalSet, certFile string, keyFile string) {
-	Logger.Info(startMsg + " with TLS ...")
-	handleShutdown(server, signals)
+func StartServerTLS(server *http.Server, listener net.Listener, signals srv_base_types.SignalSet, logger *log_level.Logger, certFile string, keyFile string) {
+	logger.Info(startMsg + " with TLS ...")
+	handleShutdown(server, signals, logger)
 	if err := server.ServeTLS(listener, certFile, keyFile); err != nil && err != http.ErrServerClosed {
-		Logger.Error(startFailedMsg, err)
+		logger.Error(startFailedMsg, err)
 	} else {
-		Logger.Info(shutdownMsg)
+		logger.Info(shutdownMsg)
 	}
 }
