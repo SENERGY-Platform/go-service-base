@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/go-service-base
 
-go 1.19
+go 1.20
 
 require (
 	github.com/y-du/go-env-loader v0.5.0
