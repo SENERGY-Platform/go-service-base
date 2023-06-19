@@ -40,9 +40,9 @@ var defaultTypeParsers = map[reflect.Type]envldr.Parser{
 	reflect.TypeOf(fs.ModePerm): fileModeParser,
 }
 
-func LoadConfig(path *string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
-	if path != nil {
-		file, err := os.Open(*path)
+func LoadConfig(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
+	if path != "" {
+		file, err := os.Open(path)
 		if err != nil {
 			return err
 		}
