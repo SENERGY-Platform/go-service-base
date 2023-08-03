@@ -26,62 +26,95 @@ import (
 )
 
 type Watchdog struct {
-	signals map[os.Signal]struct{}
-	sigChan chan os.Signal
-	hltChan chan struct{}
-	ticker  *time.Ticker
-	hltFunc []func() bool
-	stpFunc []func() error
+	signals      map[os.Signal]struct{}
+	stpFunc      []func() error
+	syncChan     chan struct{}
+	sigChan      chan os.Signal
+	healthChan   chan struct{}
+	healthTicker *time.Ticker
+	healthCtx    context.Context
+	healthCF     context.CancelFunc
+	healthWG     sync.WaitGroup
+	mu           sync.Mutex
+	ec           int
+	started      bool
+	logger       *log_level.Logger
 }
 
-func NewWatchdog(signals ...os.Signal) *Watchdog {
+func NewWatchdog(logger *log_level.Logger, signals ...os.Signal) *Watchdog {
 	sig := make(map[os.Signal]struct{})
 	for _, s := range signals {
 		sig[s] = struct{}{}
 	}
+	ctx, cf := context.WithCancel(context.Background())
 	return &Watchdog{
-		signals: sig,
-		sigChan: make(chan os.Signal, 1),
-		hltChan: make(chan struct{}),
+		signals:      sig,
+		sigChan:      make(chan os.Signal, 1),
+		healthChan:   make(chan struct{}),
+		syncChan:     make(chan struct{}),
+		healthTicker: time.NewTicker(time.Second),
+		healthCtx:    ctx,
+		healthCF:     cf,
+		logger:       logger,
 	}
 }
 
 func (w *Watchdog) RegisterHealthFunc(f func() bool) {
-	w.hltFunc = append(w.hltFunc, f)
+	w.healthWG.Add(1)
+	w.startHealthcheck(w.healthCtx, f)
 }
 
 func (w *Watchdog) RegisterStopFunc(f func() error) {
+	w.mu.Lock()
 	w.stpFunc = append(w.stpFunc, f)
+	w.mu.Unlock()
 }
 
-func (w *Watchdog) Start(logger *log_level.Logger) {
+func (w *Watchdog) Start() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.started {
+		panic("watchdog already started")
+	}
+	w.started = true
 	for sig := range w.signals {
 		signal.Notify(w.sigChan, sig)
 	}
-	ctx, cf := context.WithCancel(context.Background())
-	w.ticker = time.NewTicker(time.Second)
-	defer w.ticker.Stop()
-	for _, f := range w.hltFunc {
-		w.startHealthcheck(ctx, f)
+	go func() {
+		defer w.healthTicker.Stop()
+		select {
+		case sig := <-w.sigChan:
+			w.logger.Warningf("caught signal '%s'", sig)
+			break
+		case <-w.healthChan:
+			w.ec = 1
+			break
+		}
+		w.logger.Warning("stopping ...")
+		w.healthCF()
+		w.healthWG.Wait()
+		w.callStopFunc()
+	}()
+}
+
+func (w *Watchdog) Join() int {
+	w.mu.Lock()
+	if w.started {
+		w.mu.Unlock()
+		<-w.syncChan
+		return w.ec
 	}
-	select {
-	case sig := <-w.sigChan:
-		logger.Warningf("received signal '%s'", sig)
-		break
-	case <-w.hltChan:
-		break
-	}
-	cf()
-	w.shutdown(logger)
+	panic("watchdog not started")
 }
 
 func (w *Watchdog) startHealthcheck(ctx context.Context, f func() bool) {
 	go func() {
+		defer w.healthWG.Done()
 		for {
 			select {
-			case <-w.ticker.C:
+			case <-w.healthTicker.C:
 				if !f() {
-					close(w.hltChan)
+					close(w.healthChan)
 					return
 				}
 			case <-ctx.Done():
@@ -91,8 +124,9 @@ func (w *Watchdog) startHealthcheck(ctx context.Context, f func() bool) {
 	}()
 }
 
-func (w *Watchdog) shutdown(logger *log_level.Logger) {
-	logger.Warning("initiating shutdown ...")
+func (w *Watchdog) callStopFunc() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
 	var wg sync.WaitGroup
 	wg.Add(len(w.stpFunc))
 	for _, f := range w.stpFunc {
@@ -100,10 +134,11 @@ func (w *Watchdog) shutdown(logger *log_level.Logger) {
 		go func() {
 			err := fu()
 			if err != nil {
-				logger.Error(err)
+				w.logger.Error(err)
 			}
 			wg.Done()
 		}()
 	}
 	wg.Wait()
+	close(w.syncChan)
 }
