@@ -107,6 +107,13 @@ func (w *Watchdog) Join() int {
 	panic("watchdog not started")
 }
 
+func (w *Watchdog) Trigger() {
+	select {
+	case w.healthChan <- struct{}{}:
+	default:
+	}
+}
+
 func (w *Watchdog) startHealthcheck(ctx context.Context, f func() bool) {
 	go func() {
 		defer w.healthWG.Done()
