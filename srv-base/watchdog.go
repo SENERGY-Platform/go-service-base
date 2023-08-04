@@ -50,7 +50,7 @@ func NewWatchdog(logger *log_level.Logger, signals ...os.Signal) *Watchdog {
 	return &Watchdog{
 		signals:      sig,
 		sigChan:      make(chan os.Signal, 1),
-		healthChan:   make(chan struct{}),
+		healthChan:   make(chan struct{}, 1),
 		syncChan:     make(chan struct{}),
 		healthTicker: time.NewTicker(time.Second),
 		healthCtx:    ctx,
@@ -114,7 +114,10 @@ func (w *Watchdog) startHealthcheck(ctx context.Context, f func() bool) {
 			select {
 			case <-w.healthTicker.C:
 				if !f() {
-					close(w.healthChan)
+					select {
+					case w.healthChan <- struct{}{}:
+					default:
+					}
 					return
 				}
 			case <-ctx.Done():
