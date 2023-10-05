@@ -35,9 +35,14 @@ var fileModeParser envldr.Parser = func(t reflect.Type, val string, params []str
 	return fs.FileMode(fm), err
 }
 
+var secretStringParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+	return SecretString(val), nil
+}
+
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(level.Off):   logLevelParser,
-	reflect.TypeOf(fs.ModePerm): fileModeParser,
+	reflect.TypeOf(level.Off):        logLevelParser,
+	reflect.TypeOf(fs.ModePerm):      fileModeParser,
+	reflect.TypeOf(SecretString("")): secretStringParser,
 }
 
 func LoadConfig(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
