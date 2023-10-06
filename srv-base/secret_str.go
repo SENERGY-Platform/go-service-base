@@ -18,7 +18,6 @@ package srv_base
 
 import (
 	"crypto/rand"
-	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
 )
@@ -29,25 +28,13 @@ func (s SecretString) String() string {
 	return string(s)
 }
 
-func (s SecretString) Hash() ([]byte, error) {
-	salt := make([]byte, 16)
-	_, err := rand.Read(salt)
-	if err != nil {
-		return nil, err
-	}
-	b := []byte(s)
-	b = append(b, salt...)
-	hash := sha512.New()
-	hash.Write(b)
-	return hash.Sum(nil), err
-}
-
 func (s SecretString) MarshalJSON() ([]byte, error) {
-	hash, err := s.Hash()
+	rb := make([]byte, 8)
+	_, err := rand.Read(rb)
 	if err != nil {
 		return nil, err
 	}
-	return json.Marshal(hex.EncodeToString(hash))
+	return json.Marshal(hex.EncodeToString(rb))
 }
 
 func (s *SecretString) UnmarshalJSON(b []byte) error {
