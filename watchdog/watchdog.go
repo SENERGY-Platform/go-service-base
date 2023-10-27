@@ -45,7 +45,7 @@ type Watchdog struct {
 	started      bool
 }
 
-func NewWatchdog(signals ...os.Signal) *Watchdog {
+func New(signals ...os.Signal) *Watchdog {
 	sig := make(map[os.Signal]struct{})
 	for _, s := range signals {
 		sig[s] = struct{}{}
