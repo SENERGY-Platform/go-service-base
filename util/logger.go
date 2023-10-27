@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package srv_base
+package util
 
 import (
 	"fmt"
