@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package srv_base
+package watchdog
 
 import (
 	"context"
-	log_level "github.com/y-du/go-log-level"
 	"os"
 	"os/signal"
 	"sync"
@@ -38,10 +37,9 @@ type Watchdog struct {
 	mu           sync.Mutex
 	ec           int
 	started      bool
-	logger       *log_level.Logger
 }
 
-func NewWatchdog(logger *log_level.Logger, signals ...os.Signal) *Watchdog {
+func NewWatchdog(signals ...os.Signal) *Watchdog {
 	sig := make(map[os.Signal]struct{})
 	for _, s := range signals {
 		sig[s] = struct{}{}
@@ -55,7 +53,6 @@ func NewWatchdog(logger *log_level.Logger, signals ...os.Signal) *Watchdog {
 		healthTicker: time.NewTicker(time.Second),
 		healthCtx:    ctx,
 		healthCF:     cf,
-		logger:       logger,
 	}
 }
 
@@ -84,13 +81,13 @@ func (w *Watchdog) Start() {
 		defer w.healthTicker.Stop()
 		select {
 		case sig := <-w.sigChan:
-			w.logger.Warningf("caught signal '%s'", sig)
+			Logger.Warningf("caught signal '%s'", sig)
 			break
 		case <-w.healthChan:
 			w.ec = 1
 			break
 		}
-		w.logger.Warning("stopping ...")
+		Logger.Warning("stopping ...")
 		w.healthCF()
 		w.healthWG.Wait()
 		w.callStopFunc()
@@ -144,7 +141,7 @@ func (w *Watchdog) callStopFunc() {
 		go func() {
 			err := fu()
 			if err != nil {
-				w.logger.Error(err)
+				Logger.Error(err)
 			}
 			wg.Done()
 		}()
