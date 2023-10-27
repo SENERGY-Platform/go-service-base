@@ -24,6 +24,12 @@ import (
 	"time"
 )
 
+var Logger interface {
+	Warning(arg ...any)
+	Warningf(format string, arg ...any)
+	Error(arg ...any)
+}
+
 type Watchdog struct {
 	signals      map[os.Signal]struct{}
 	stpFunc      []func() error
