@@ -21,7 +21,7 @@ import (
 	"time"
 )
 
-func Await(ctx context.Context, client Api, jID string, delay, httpTimeout time.Duration, logger interface{ Error(error) }) (Job, error) {
+func Await(ctx context.Context, client Api, jID string, delay, httpTimeout time.Duration, logger interface{ Error(arg ...any) }) (Job, error) {
 	ticker := time.NewTicker(delay)
 	defer ticker.Stop()
 	var cfs []context.CancelFunc
