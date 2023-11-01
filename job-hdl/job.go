@@ -45,7 +45,9 @@ func (j *job) CallTarget(cbk func()) {
 	if err != nil {
 		j.Error = &lib.JobErr{
 			Message: err.Error(),
-			Code:    ErrCodeMapper(err),
+		}
+		if ErrCodeMapper != nil {
+			j.Error.Code = ErrCodeMapper(err)
 		}
 		if Logger != nil {
 			Logger.Warningf("job '%s' got error: %s", j.ID, err.Error())
