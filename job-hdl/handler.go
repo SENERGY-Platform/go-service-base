@@ -105,6 +105,16 @@ func (h *Handler) Cancel(_ context.Context, id string) error {
 }
 
 func (h *Handler) List(_ context.Context, filter lib.JobFilter) ([]lib.Job, error) {
+	if filter.Status != "" {
+		_, ok := jobStateMap[filter.Status]
+		if !ok {
+			err := fmt.Errorf("unknown job status '%s'", filter.Status)
+			if NewInvalidInputError != nil {
+				err = NewInvalidInputError(err)
+			}
+			return nil, err
+		}
+	}
 	var jobs []lib.Job
 	h.mu.RLock()
 	defer h.mu.RUnlock()
@@ -180,4 +190,13 @@ func check(filter lib.JobFilter, job lib.Job) bool {
 		}
 	}
 	return true
+}
+
+var jobStateMap = map[lib.JobStatus]struct{}{
+	lib.JobPending:   {},
+	lib.JobRunning:   {},
+	lib.JobCanceled:  {},
+	lib.JobCompleted: {},
+	lib.JobError:     {},
+	lib.JobOK:        {},
 }
