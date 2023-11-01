@@ -30,7 +30,7 @@ type Job struct {
 
 type JobErr struct {
 	Message string `json:"message"`
-	Code    int    `json:"code"`
+	Code    *int   `json:"code"`
 }
 
 type JobStatus = string
