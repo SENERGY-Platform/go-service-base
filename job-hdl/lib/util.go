@@ -35,7 +35,7 @@ func Await(ctx context.Context, client Api, jID string, delay, httpTimeout time.
 		case <-ctx.Done():
 			c, cf := context.WithTimeout(context.Background(), httpTimeout)
 			err := client.CancelJob(c, jID)
-			if err != nil {
+			if err != nil && logger != nil {
 				logger.Error(err)
 			}
 			cf()
