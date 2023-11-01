@@ -87,13 +87,17 @@ func (w *Watchdog) Start() {
 		defer w.healthTicker.Stop()
 		select {
 		case sig := <-w.sigChan:
-			Logger.Warningf("caught signal '%s'", sig)
+			if Logger != nil {
+				Logger.Warningf("caught signal '%s'", sig)
+			}
 			break
 		case <-w.healthChan:
 			w.ec = 1
 			break
 		}
-		Logger.Warning("stopping ...")
+		if Logger != nil {
+			Logger.Warning("stopping ...")
+		}
 		w.healthCF()
 		w.healthWG.Wait()
 		w.callStopFunc()
@@ -147,7 +151,9 @@ func (w *Watchdog) callStopFunc() {
 		go func() {
 			err := fu()
 			if err != nil {
-				Logger.Error(err)
+				if Logger != nil {
+					Logger.Error(err)
+				}
 			}
 			wg.Done()
 		}()
