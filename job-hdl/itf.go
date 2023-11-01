@@ -35,7 +35,7 @@ var Logger interface {
 }
 
 var (
-	ErrCodeMapper        func(error) int
+	ErrCodeMapper        func(error) *int
 	NewInternalErr       func(error) error
 	NewNotFoundErr       func(error) error
 	NewInvalidInputError func(error) error
