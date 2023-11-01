@@ -33,7 +33,9 @@ type job struct {
 }
 
 func (j *job) CallTarget(cbk func()) {
-	Logger.Debugf("job '%s' starting ...", j.ID)
+	if Logger != nil {
+		Logger.Debugf("job '%s' starting ...", j.ID)
+	}
 	j.mu.Lock()
 	t := time.Now().UTC()
 	j.Started = &t
@@ -45,12 +47,16 @@ func (j *job) CallTarget(cbk func()) {
 			Message: err.Error(),
 			Code:    ErrCodeMapper(err),
 		}
-		Logger.Warningf("job '%s' got error: %s", j.ID, err.Error())
+		if Logger != nil {
+			Logger.Warningf("job '%s' got error: %s", j.ID, err.Error())
+		}
 	}
 	t2 := time.Now().UTC()
 	j.Completed = &t2
 	j.mu.Unlock()
-	Logger.Debugf("job '%s' completed", j.ID)
+	if Logger != nil {
+		Logger.Debugf("job '%s' completed", j.ID)
+	}
 	cbk()
 }
 
