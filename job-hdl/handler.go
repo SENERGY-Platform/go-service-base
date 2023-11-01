@@ -45,7 +45,10 @@ func New(ctx context.Context, ccHandler *ccjh.Handler) *Handler {
 func (h *Handler) Create(_ context.Context, desc string, tFunc func(context.Context, context.CancelFunc) error) (string, error) {
 	uid, err := uuid.NewRandom()
 	if err != nil {
-		return "", NewInternalErr(err)
+		if NewInternalErr != nil {
+			err = NewInternalErr(err)
+		}
+		return "", err
 	}
 	id := uid.String()
 	ctx, cf := context.WithCancel(h.ctx)
@@ -63,7 +66,10 @@ func (h *Handler) Create(_ context.Context, desc string, tFunc func(context.Cont
 	defer h.mu.Unlock()
 	err = h.ccHandler.Add(&j)
 	if err != nil {
-		return "", NewInternalErr(err)
+		if NewInternalErr != nil {
+			err = NewInternalErr(err)
+		}
+		return "", err
 	}
 	h.jobs[id] = &j
 	return id, nil
@@ -74,7 +80,11 @@ func (h *Handler) Get(_ context.Context, id string) (lib.Job, error) {
 	defer h.mu.RUnlock()
 	j, ok := h.jobs[id]
 	if !ok {
-		return lib.Job{}, NewNotFoundErr(fmt.Errorf("%s not found", id))
+		err := fmt.Errorf("%s not found", id)
+		if NewNotFoundErr != nil {
+			err = NewNotFoundErr(err)
+		}
+		return lib.Job{}, err
 	}
 	return j.Meta(), nil
 }
@@ -84,7 +94,11 @@ func (h *Handler) Cancel(_ context.Context, id string) error {
 	defer h.mu.RUnlock()
 	j, ok := h.jobs[id]
 	if !ok {
-		return NewNotFoundErr(fmt.Errorf("%s not found", id))
+		err := fmt.Errorf("%s not found", id)
+		if NewNotFoundErr != nil {
+			err = NewNotFoundErr(err)
+		}
+		return err
 	}
 	j.Cancel()
 	return nil
