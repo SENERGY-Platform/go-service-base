@@ -1,4 +1,4 @@
-github.com/y-du/go-env-loader v0.5.1 h1:0BHxc4A+jkWrbyO7XbfvR9xb8/W/0OIeLGCsX+4cUzg=
-github.com/y-du/go-env-loader v0.5.1/go.mod h1:Acny7eBd/EoKIkG9Tm2ATdP/vhQ47vIYGGIYqBcOILU=
-github.com/y-du/go-log-level v0.2.3 h1:dke5ZICp8BVZRg6wKpGHum8l6f5ywXsA8YZkRhy6sGo=
-github.com/y-du/go-log-level v0.2.3/go.mod h1:yed1DhHsG8h7QRHp5My+NS3p8jiN/hFQopOs7yIaEmc=
+github.com/y-du/go-env-loader v0.5.2 h1:LxubTfx7zl1VpBNzUQidSp3yub3/7mxMg63QSuRlhd4=
+github.com/y-du/go-env-loader v0.5.2/go.mod h1:QBaFGtrTdp4eiMUjg9UFf1F3TzbEbUhWDeHYyEsqs8Y=
+github.com/y-du/go-log-level v0.2.4 h1:COCFNczF7b7yd5leEAVMnO6OYaLZVu9lsrk68Qln6t4=
+github.com/y-du/go-log-level v0.2.4/go.mod h1:lhCvJlDCuSC9GfmtVDXuXc7lbbAd8igxl58qK8SjPX8=

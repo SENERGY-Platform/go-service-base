@@ -1,8 +1,8 @@
 module github.com/SENERGY-Platform/go-service-base/util
 
-go 1.21
+go 1.22
 
 require (
-	github.com/y-du/go-env-loader v0.5.1
-	github.com/y-du/go-log-level v0.2.3
+	github.com/y-du/go-env-loader v0.5.2
+	github.com/y-du/go-log-level v0.2.4
 )
