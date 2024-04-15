@@ -21,6 +21,7 @@ import "time"
 type Job struct {
 	ID          string     `json:"id"`
 	Error       *JobErr    `json:"error"`
+	Result      any        `json:"result"`
 	Created     time.Time  `json:"created"`
 	Started     *time.Time `json:"started"`
 	Completed   *time.Time `json:"completed"`
