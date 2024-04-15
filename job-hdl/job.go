@@ -26,7 +26,7 @@ import (
 
 type job struct {
 	mu    sync.RWMutex
-	tFunc func(context.Context, context.CancelFunc) error
+	tFunc TargetFunc
 	ctx   context.Context
 	cFunc context.CancelFunc
 	lib.Job

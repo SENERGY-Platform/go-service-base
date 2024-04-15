@@ -42,7 +42,7 @@ func New(ctx context.Context, ccHandler *ccjh.Handler) *Handler {
 	}
 }
 
-func (h *Handler) Create(_ context.Context, desc string, tFunc func(context.Context, context.CancelFunc) error) (string, error) {
+func (h *Handler) Create(_ context.Context, desc string, tFunc TargetFunc) (string, error) {
 	uid, err := uuid.NewRandom()
 	if err != nil {
 		if NewInternalErr != nil {

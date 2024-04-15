@@ -21,8 +21,10 @@ import (
 	"github.com/SENERGY-Platform/go-service-base/job-hdl/lib"
 )
 
+type TargetFunc func(context.Context, context.CancelFunc) (any, error)
+
 type JobHandler interface {
-	Create(ctx context.Context, desc string, tFunc func(context.Context, context.CancelFunc) error) (string, error)
+	Create(ctx context.Context, desc string, tFunc TargetFunc) (string, error)
 	Get(ctx context.Context, id string) (lib.Job, error)
 	Cancel(ctx context.Context, id string) error
 	List(ctx context.Context, filter lib.JobFilter) ([]lib.Job, error)
