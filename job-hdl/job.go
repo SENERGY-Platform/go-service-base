@@ -40,7 +40,7 @@ func (j *job) CallTarget(cbk func()) {
 	t := time.Now().UTC()
 	j.Started = &t
 	j.mu.Unlock()
-	err := j.tFunc(j.ctx, j.cFunc)
+	res, err := j.tFunc(j.ctx, j.cFunc)
 	j.mu.Lock()
 	if err != nil {
 		j.Error = &lib.JobErr{
@@ -52,6 +52,8 @@ func (j *job) CallTarget(cbk func()) {
 		if Logger != nil {
 			Logger.Warningf("job '%s' got error: %s", j.ID, err.Error())
 		}
+	} else {
+		j.Result = res
 	}
 	t2 := time.Now().UTC()
 	j.Completed = &t2
