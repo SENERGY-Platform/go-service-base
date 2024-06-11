@@ -19,6 +19,7 @@ package job_hdl
 import (
 	"context"
 	"github.com/SENERGY-Platform/go-service-base/job-hdl/lib"
+	"time"
 )
 
 type TargetFunc func(context.Context, context.CancelFunc) (any, error)
@@ -28,7 +29,7 @@ type JobHandler interface {
 	Get(ctx context.Context, id string) (lib.Job, error)
 	Cancel(ctx context.Context, id string) error
 	List(ctx context.Context, filter lib.JobFilter) ([]lib.Job, error)
-	PurgeJobs(ctx context.Context, maxAge int64) (int, error)
+	PurgeJobs(ctx context.Context, maxAge time.Duration) (int, error)
 }
 
 var Logger interface {
