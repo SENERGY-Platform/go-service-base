@@ -135,14 +135,14 @@ func (h *Handler) List(_ context.Context, filter lib.JobFilter) ([]lib.Job, erro
 	return jobs, nil
 }
 
-func (h *Handler) PurgeJobs(_ context.Context, maxAge int64) (int, error) {
+func (h *Handler) PurgeJobs(_ context.Context, maxAge time.Duration) (int, error) {
 	var l []string
 	tNow := time.Now().UTC()
 	h.mu.RLock()
 	for k, v := range h.jobs {
 		m := v.Meta()
 		if v.IsCanceled() || m.Completed != nil || m.Canceled != nil {
-			if tNow.Sub(m.Created).Microseconds() >= maxAge {
+			if tNow.Sub(m.Created) >= maxAge {
 				l = append(l, k)
 			}
 		}
