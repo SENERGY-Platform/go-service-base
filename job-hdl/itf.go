@@ -33,6 +33,7 @@ type JobHandler interface {
 }
 
 var Logger interface {
+	Errorf(format string, arg ...any)
 	Warningf(format string, arg ...any)
 	Debugf(format string, arg ...any)
 }
