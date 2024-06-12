@@ -64,17 +64,14 @@ func (h *PurgeJobsHandler) run(ctx context.Context) {
 			if Logger != nil {
 				Logger.Debugf("purging old jobs ...")
 			}
-			n, err := h.jobHdl.PurgeJobs(ctx, h.maxAge)
-			if err != nil {
-				return
-			}
-			if err != nil {
+			if n, err := h.jobHdl.PurgeJobs(ctx, h.maxAge); err != nil {
 				if Logger != nil {
 					Logger.Errorf("purging old jobs failed: %s", err)
 				}
-			}
-			if Logger != nil {
-				Logger.Debugf("purged '%d' old jobs", n)
+			} else {
+				if Logger != nil {
+					Logger.Debugf("purged '%d' old jobs", n)
+				}
 			}
 			timer.Reset(h.interval)
 		case <-ctx.Done():
