@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cfg_type
+package types
 
 import (
 	"crypto/rand"

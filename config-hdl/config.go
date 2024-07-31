@@ -18,7 +18,7 @@ package config_hdl
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/go-service-base/config-hdl/cfg-type"
+	"github.com/SENERGY-Platform/go-service-base/config-hdl/types"
 	envldr "github.com/y-du/go-env-loader"
 	"io/fs"
 	"os"
@@ -32,12 +32,12 @@ var fileModeParser = func(t reflect.Type, val string, params []string, kwParams 
 }
 
 var secretStringParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return cfg_type.ParseSecret(val)
+	return types.ParseSecret(val)
 }
 
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(fs.ModePerm):         fileModeParser,
-	reflect.TypeOf(cfg_type.Secret("")): secretStringParser,
+	reflect.TypeOf(fs.ModePerm):      fileModeParser,
+	reflect.TypeOf(types.Secret("")): secretStringParser,
 }
 
 func Load(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
