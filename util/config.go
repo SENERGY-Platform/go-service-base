@@ -24,6 +24,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 var logLevelParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
@@ -39,10 +40,15 @@ var secretStringParser envldr.Parser = func(t reflect.Type, val string, params [
 	return SecretString(val), nil
 }
 
+var durationParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+	return time.ParseDuration(val)
+}
+
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
 	reflect.TypeOf(level.Off):        logLevelParser,
 	reflect.TypeOf(fs.ModePerm):      fileModeParser,
 	reflect.TypeOf(SecretString("")): secretStringParser,
+	reflect.TypeOf(time.Nanosecond):  durationParser,
 }
 
 func LoadConfig(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
