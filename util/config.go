@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 InfAI (CC SES)
+ * Copyright 2024 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package util
 
 import (
 	"encoding/json"
-	"github.com/y-du/go-env-loader"
+	"github.com/SENERGY-Platform/go-service-base/util/cfg-type"
+	envldr "github.com/y-du/go-env-loader"
 	"github.com/y-du/go-log-level/level"
 	"io/fs"
 	"os"
 	"reflect"
 	"strconv"
-	"time"
 )
 
 var logLevelParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
@@ -37,18 +37,13 @@ var fileModeParser envldr.Parser = func(t reflect.Type, val string, params []str
 }
 
 var secretStringParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return SecretString(val), nil
-}
-
-var durationParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return time.ParseDuration(val)
+	return cfg_type.ParseSecret(val)
 }
 
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(level.Off):        logLevelParser,
-	reflect.TypeOf(fs.ModePerm):      fileModeParser,
-	reflect.TypeOf(SecretString("")): secretStringParser,
-	reflect.TypeOf(time.Nanosecond):  durationParser,
+	reflect.TypeOf(level.Off):           logLevelParser,
+	reflect.TypeOf(fs.ModePerm):         fileModeParser,
+	reflect.TypeOf(cfg_type.Secret("")): secretStringParser,
 }
 
 func LoadConfig(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {

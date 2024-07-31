@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 InfAI (CC SES)
+ * Copyright 2024 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package util
+package cfg_type
 
 import (
 	"crypto/rand"
@@ -22,26 +22,42 @@ import (
 	"encoding/json"
 )
 
-type SecretString string
+type Secret string
 
-func (s SecretString) String() string {
+func ParseSecret(v string) (Secret, error) {
+	return Secret(v), nil
+}
+
+func (s Secret) Value() string {
 	return string(s)
 }
 
-func (s SecretString) MarshalJSON() ([]byte, error) {
-	rb := make([]byte, 8)
-	_, err := rand.Read(rb)
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(hex.EncodeToString(rb))
+func (s Secret) String() string {
+	return getRandomStr()
 }
 
-func (s *SecretString) UnmarshalJSON(b []byte) error {
+func (s Secret) MarshalJSON() ([]byte, error) {
+	return json.Marshal(getRandomStr())
+}
+
+func (s *Secret) UnmarshalJSON(b []byte) error {
 	var str string
 	if err := json.Unmarshal(b, &str); err != nil {
 		return err
 	}
-	*s = SecretString(str)
+	v, err := ParseSecret(str)
+	if err != nil {
+		return err
+	}
+	*s = v
 	return nil
+}
+
+func getRandomStr() string {
+	rb := make([]byte, 8)
+	_, err := rand.Read(rb)
+	if err != nil {
+		return err.Error()
+	}
+	return hex.EncodeToString(rb)
 }
