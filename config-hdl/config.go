@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-package util
+package config_hdl
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/go-service-base/util/cfg-type"
+	"github.com/SENERGY-Platform/go-service-base/config-hdl/cfg-type"
 	envldr "github.com/y-du/go-env-loader"
-	"github.com/y-du/go-log-level/level"
 	"io/fs"
 	"os"
 	"reflect"
 	"strconv"
 )
 
-var logLevelParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return level.Parse(val)
-}
-
-var fileModeParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+var fileModeParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
 	fm, err := strconv.ParseInt(val, 8, 32)
 	return fs.FileMode(fm), err
 }
 
-var secretStringParser envldr.Parser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+var secretStringParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
 	return cfg_type.ParseSecret(val)
 }
 
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(level.Off):           logLevelParser,
 	reflect.TypeOf(fs.ModePerm):         fileModeParser,
 	reflect.TypeOf(cfg_type.Secret("")): secretStringParser,
 }
