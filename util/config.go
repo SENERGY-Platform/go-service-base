@@ -58,14 +58,14 @@ func LoadConfig(path string, cfg any, envKeywordParsers map[string]envldr.Parser
 			return err
 		}
 	}
-	if envTypeParsers == nil {
-		envTypeParsers = defaultTypeParsers
-	} else {
+	if len(envTypeParsers) > 0 {
 		for r, parser := range defaultTypeParsers {
 			if _, ok := envTypeParsers[r]; !ok {
 				envTypeParsers[r] = parser
 			}
 		}
+	} else {
+		envTypeParsers = defaultTypeParsers
 	}
 	return envldr.LoadEnvUserParser(cfg, envKeywordParsers, envTypeParsers, envKindParsers)
 }
