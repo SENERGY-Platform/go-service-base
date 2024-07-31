@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"reflect"
 )
 
 type LoggerConfig struct {
@@ -66,4 +67,8 @@ func NewLogger(config LoggerConfig) (logger *log_level.Logger, out *os.File, err
 	}
 	logger, err = log_level.New(log.New(out, config.Prefix, flags), config.Level)
 	return
+}
+
+var LogLevelParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+	return level.Parse(val)
 }
