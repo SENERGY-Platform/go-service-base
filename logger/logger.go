@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 InfAI (CC SES)
+ * Copyright 2024 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package util
+package logger
 
 import (
 	"fmt"
-	"github.com/y-du/go-log-level"
+	log_level "github.com/y-du/go-log-level"
 	"github.com/y-du/go-log-level/level"
 	"log"
 	"os"
@@ -48,7 +48,7 @@ func (e *LogFileError) Unwrap() error {
 	return e.err
 }
 
-func NewLogger(config LoggerConfig) (logger *log_level.Logger, out *os.File, err error) {
+func New(config LoggerConfig) (logger *log_level.Logger, out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
 	if config.Utc {
 		flags = flags | log.LUTC
@@ -69,6 +69,6 @@ func NewLogger(config LoggerConfig) (logger *log_level.Logger, out *os.File, err
 	return
 }
 
-var LogLevelParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+var LevelParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
 	return level.Parse(val)
 }
