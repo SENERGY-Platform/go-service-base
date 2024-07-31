@@ -40,15 +40,9 @@ var defaultTypeParsers = map[reflect.Type]envldr.Parser{
 	reflect.TypeOf(types.Secret("")): secretStringParser,
 }
 
-func Load(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser) error {
-	if path != "" {
-		file, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		decoder := json.NewDecoder(file)
-		if err = decoder.Decode(cfg); err != nil {
+func Load(cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
+	for _, path := range paths {
+		if err := readConfig(path, cfg); err != nil {
 			return err
 		}
 	}
@@ -62,4 +56,14 @@ func Load(path string, cfg any, envKeywordParsers map[string]envldr.Parser, envT
 		envTypeParsers = defaultTypeParsers
 	}
 	return envldr.LoadEnvUserParser(cfg, envKeywordParsers, envTypeParsers, envKindParsers)
+}
+
+func readConfig(path string, cfg any) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	decoder := json.NewDecoder(file)
+	return decoder.Decode(cfg)
 }
