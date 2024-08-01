@@ -1,4 +1,4 @@
-module github.com/SENERGY-Platform/go-service-base/logging
+module github.com/SENERGY-Platform/go-service-base/logger
 
 go 1.22
 
