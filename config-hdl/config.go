@@ -40,22 +40,22 @@ var defaultTypeParsers = map[reflect.Type]envldr.Parser{
 	reflect.TypeOf(types.Secret("")): secretStringParser,
 }
 
-func Load(cfg any, envKeywordParsers map[string]envldr.Parser, envTypeParsers map[reflect.Type]envldr.Parser, envKindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
+func Load(cfg any, keywordParsers map[string]envldr.Parser, typeParsers map[reflect.Type]envldr.Parser, kindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
 	for _, path := range paths {
 		if err := readConfig(path, cfg); err != nil {
 			return err
 		}
 	}
-	if len(envTypeParsers) > 0 {
+	if len(typeParsers) > 0 {
 		for r, parser := range defaultTypeParsers {
-			if _, ok := envTypeParsers[r]; !ok {
-				envTypeParsers[r] = parser
+			if _, ok := typeParsers[r]; !ok {
+				typeParsers[r] = parser
 			}
 		}
 	} else {
-		envTypeParsers = defaultTypeParsers
+		typeParsers = defaultTypeParsers
 	}
-	return envldr.LoadEnvUserParser(cfg, envKeywordParsers, envTypeParsers, envKindParsers)
+	return envldr.LoadEnvUserParser(cfg, keywordParsers, typeParsers, kindParsers)
 }
 
 func readConfig(path string, cfg any) error {
