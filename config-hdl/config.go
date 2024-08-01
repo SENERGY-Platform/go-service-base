@@ -41,9 +41,11 @@ var defaultTypeParsers = map[reflect.Type]envldr.Parser{
 }
 
 func Load(cfg any, keywordParsers map[string]envldr.Parser, typeParsers map[reflect.Type]envldr.Parser, kindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
-	for _, path := range paths {
-		if err := readConfig(path, cfg); err != nil {
-			return err
+	for _, p := range paths {
+		if p != "" {
+			if err := readConfig(p, cfg); err != nil {
+				return err
+			}
 		}
 	}
 	if len(typeParsers) > 0 {
