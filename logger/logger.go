@@ -17,7 +17,6 @@
 package logger
 
 import (
-	"fmt"
 	log_level "github.com/y-du/go-log-level"
 	"github.com/y-du/go-log-level/level"
 	"log"
@@ -25,16 +24,6 @@ import (
 	"path"
 	"reflect"
 )
-
-type LoggerConfig struct {
-	Level        level.Level `json:"level" env_var:"LOGGER_LEVEL"`
-	Utc          bool        `json:"utc" env_var:"LOGGER_UTC"`
-	Path         string      `json:"path" env_var:"LOGGER_PATH"`
-	FileName     string      `json:"file_name" env_var:"LOGGER_FILE_NAME"`
-	Terminal     bool        `json:"terminal" env_var:"LOGGER_TERMINAL"`
-	Microseconds bool        `json:"microseconds" env_var:"LOGGER_MICROSECONDS"`
-	Prefix       string      `json:"prefix" env_var:"LOGGER_PREFIX"`
-}
 
 type LogFileError struct {
 	err error
@@ -48,24 +37,24 @@ func (e *LogFileError) Unwrap() error {
 	return e.err
 }
 
-func New(config LoggerConfig) (logger *log_level.Logger, out *os.File, err error) {
+func New(level level.Level, dirPath, fileName, prefix string, utc, terminal, microseconds bool) (logger *log_level.Logger, out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
-	if config.Utc {
+	if utc {
 		flags = flags | log.LUTC
 	}
-	if config.Microseconds {
+	if microseconds {
 		flags = flags | log.Lmicroseconds
 	}
-	if config.Terminal {
+	if terminal {
 		out = os.Stderr
 	} else {
-		out, err = os.OpenFile(path.Join(config.Path, fmt.Sprintf("%s.log", config.FileName)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		out, err = os.OpenFile(path.Join(dirPath, fileName+".log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			err = &LogFileError{err: err}
 			return
 		}
 	}
-	logger, err = log_level.New(log.New(out, config.Prefix, flags), config.Level)
+	logger, err = log_level.New(log.New(out, prefix, flags), level)
 	return
 }
 
