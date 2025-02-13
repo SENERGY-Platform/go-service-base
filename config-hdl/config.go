@@ -18,8 +18,8 @@ package config_hdl
 
 import (
 	"encoding/json"
+	envldr "github.com/SENERGY-Platform/go-env-loader"
 	"github.com/SENERGY-Platform/go-service-base/config-hdl/types"
-	envldr "github.com/y-du/go-env-loader"
 	"io/fs"
 	"os"
 	"reflect"
