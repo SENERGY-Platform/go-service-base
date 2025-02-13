@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 InfAI (CC SES)
+ * Copyright 2025 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,39 +17,34 @@
 package types
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"time"
 )
 
-type Secret string
+type Duration time.Duration
 
-func (s Secret) Value() string {
-	return string(s)
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Duration(d).String())
 }
 
-func (s Secret) String() string {
-	return getRandomStr()
-}
-
-func (s Secret) MarshalJSON() ([]byte, error) {
-	return json.Marshal(getRandomStr())
-}
-
-func (s *Secret) UnmarshalJSON(b []byte) error {
-	var str string
-	if err := json.Unmarshal(b, &str); err != nil {
+func (d *Duration) UnmarshalJSON(b []byte) error {
+	var v any
+	if err := json.Unmarshal(b, &v); err != nil {
 		return err
 	}
-	*s = Secret(str)
-	return nil
-}
-
-func getRandomStr() string {
-	rb := make([]byte, 8)
-	_, err := rand.Read(rb)
-	if err != nil {
-		return err.Error()
+	switch val := v.(type) {
+	case float64:
+		*d = Duration(time.Duration(val))
+		return nil
+	case string:
+		tmp, err := time.ParseDuration(val)
+		if err != nil {
+			return err
+		}
+		*d = Duration(tmp)
+		return nil
+	default:
+		return fmt.Errorf("invalid format: %v", val)
 	}
-	return hex.EncodeToString(rb)
 }

@@ -23,21 +23,14 @@ import (
 	"io/fs"
 	"os"
 	"reflect"
-	"strconv"
+	"time"
 )
 
-var fileModeParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	fm, err := strconv.ParseInt(val, 8, 32)
-	return fs.FileMode(fm), err
-}
-
-var secretStringParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return types.ParseSecret(val)
-}
-
 var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(fs.ModePerm):      fileModeParser,
-	reflect.TypeOf(types.Secret("")): secretStringParser,
+	reflect.TypeOf(fs.ModePerm):       fileModeParser,
+	reflect.TypeOf(types.Secret("")):  secretStringParser,
+	reflect.TypeOf(time.Nanosecond):   durationParser,
+	reflect.TypeOf(types.Duration(0)): pkgDurationParser,
 }
 
 func Load(cfg any, keywordParsers map[string]envldr.Parser, typeParsers map[reflect.Type]envldr.Parser, kindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
