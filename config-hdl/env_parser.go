@@ -24,12 +24,12 @@ import (
 	"time"
 )
 
-var fileModeParser = func(_ reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+func fileModeParser(_ reflect.Type, val string, _ []string, _ map[string]string) (interface{}, error) {
 	fm, err := strconv.ParseInt(val, 8, 32)
 	return fs.FileMode(fm), err
 }
 
-var secretStringParser = func(_ reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
+func secretStringParser(_ reflect.Type, val string, _ []string, _ map[string]string) (interface{}, error) {
 	return types.Secret(val), nil
 }
 
