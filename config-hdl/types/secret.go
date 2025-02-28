@@ -20,6 +20,8 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	envldr "github.com/SENERGY-Platform/go-env-loader"
+	"reflect"
 )
 
 type Secret string
@@ -52,4 +54,12 @@ func getRandomStr() string {
 		return err.Error()
 	}
 	return hex.EncodeToString(rb)
+}
+
+func SecretEnvTypeParser() (reflect.Type, envldr.Parser) {
+	return reflect.TypeOf(Secret("")), SecretEnvParser
+}
+
+func SecretEnvParser(_ reflect.Type, val string, _ []string, _ map[string]string) (interface{}, error) {
+	return Secret(val), nil
 }

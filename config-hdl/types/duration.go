@@ -19,6 +19,8 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	envldr "github.com/SENERGY-Platform/go-env-loader"
+	"reflect"
 	"time"
 )
 
@@ -47,4 +49,16 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 	default:
 		return fmt.Errorf("invalid format: %v", val)
 	}
+}
+
+func DurationEnvTypeParser() (reflect.Type, envldr.Parser) {
+	return reflect.TypeOf(Duration(0)), DurationEnvParser
+}
+
+func DurationEnvParser(_ reflect.Type, val string, _ []string, _ map[string]string) (interface{}, error) {
+	d, err := time.ParseDuration(val)
+	if err != nil {
+		return Duration(0), err
+	}
+	return Duration(d), nil
 }

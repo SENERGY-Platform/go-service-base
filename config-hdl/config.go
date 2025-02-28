@@ -19,21 +19,17 @@ package config_hdl
 import (
 	"encoding/json"
 	envldr "github.com/SENERGY-Platform/go-env-loader"
-	"github.com/SENERGY-Platform/go-service-base/config-hdl/types"
-	"io/fs"
 	"os"
 	"reflect"
-	"time"
 )
 
-var defaultTypeParsers = map[reflect.Type]envldr.Parser{
-	reflect.TypeOf(fs.ModePerm):       fileModeParser,
-	reflect.TypeOf(types.Secret("")):  secretStringParser,
-	reflect.TypeOf(time.Nanosecond):   durationParser,
-	reflect.TypeOf(types.Duration(0)): pkgDurationParser,
-}
+type EnvKeywordParser func() (string, envldr.Parser)
 
-func Load(cfg any, keywordParsers map[string]envldr.Parser, typeParsers map[reflect.Type]envldr.Parser, kindParsers map[reflect.Kind]envldr.Parser, paths ...string) error {
+type EnvTypeParser func() (reflect.Type, envldr.Parser)
+
+type EnvKindParser func() (reflect.Kind, envldr.Parser)
+
+func Load(cfg any, envKeywordParsers []EnvKeywordParser, envTypeParsers []EnvTypeParser, envKindParsers []EnvKindParser, paths ...string) error {
 	for _, p := range paths {
 		if p != "" {
 			if err := readConfig(p, cfg); err != nil {
@@ -41,16 +37,22 @@ func Load(cfg any, keywordParsers map[string]envldr.Parser, typeParsers map[refl
 			}
 		}
 	}
-	if len(typeParsers) > 0 {
-		for r, parser := range defaultTypeParsers {
-			if _, ok := typeParsers[r]; !ok {
-				typeParsers[r] = parser
-			}
-		}
-	} else {
-		typeParsers = defaultTypeParsers
+	keywordParserMap := make(map[string]envldr.Parser)
+	for _, keywordParser := range envKeywordParsers {
+		kw, p := keywordParser()
+		keywordParserMap[kw] = p
 	}
-	return envldr.LoadEnvUserParser(cfg, keywordParsers, typeParsers, kindParsers)
+	typeParserMap := make(map[reflect.Type]envldr.Parser)
+	for _, typeParser := range envTypeParsers {
+		t, p := typeParser()
+		typeParserMap[t] = p
+	}
+	kindParserMap := make(map[reflect.Kind]envldr.Parser)
+	for _, kindParser := range envKindParsers {
+		k, p := kindParser()
+		kindParserMap[k] = p
+	}
+	return envldr.LoadEnvUserParser(cfg, keywordParserMap, typeParserMap, kindParserMap)
 }
 
 func readConfig(path string, cfg any) error {
