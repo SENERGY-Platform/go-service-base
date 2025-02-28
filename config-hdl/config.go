@@ -23,11 +23,13 @@ import (
 	"reflect"
 )
 
-type EnvKeywordParser func() (string, envldr.Parser)
+type EnvParser = envldr.Parser
 
-type EnvTypeParser func() (reflect.Type, envldr.Parser)
+type EnvKeywordParser func() (string, EnvParser)
 
-type EnvKindParser func() (reflect.Kind, envldr.Parser)
+type EnvTypeParser func() (reflect.Type, EnvParser)
+
+type EnvKindParser func() (reflect.Kind, EnvParser)
 
 func Load(cfg any, envKeywordParsers []EnvKeywordParser, envTypeParsers []EnvTypeParser, envKindParsers []EnvKindParser, paths ...string) error {
 	for _, p := range paths {
@@ -37,17 +39,17 @@ func Load(cfg any, envKeywordParsers []EnvKeywordParser, envTypeParsers []EnvTyp
 			}
 		}
 	}
-	keywordParserMap := make(map[string]envldr.Parser)
+	keywordParserMap := make(map[string]EnvParser)
 	for _, keywordParser := range envKeywordParsers {
 		kw, p := keywordParser()
 		keywordParserMap[kw] = p
 	}
-	typeParserMap := make(map[reflect.Type]envldr.Parser)
+	typeParserMap := make(map[reflect.Type]EnvParser)
 	for _, typeParser := range envTypeParsers {
 		t, p := typeParser()
 		typeParserMap[t] = p
 	}
-	kindParserMap := make(map[reflect.Kind]envldr.Parser)
+	kindParserMap := make(map[reflect.Kind]EnvParser)
 	for _, kindParser := range envKindParsers {
 		k, p := kindParser()
 		kindParserMap[k] = p
