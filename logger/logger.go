@@ -22,7 +22,19 @@ import (
 	"log"
 	"os"
 	"path"
-	"reflect"
+)
+
+type Logger = log_level.Logger
+
+type Level = level.Level
+
+const (
+	Off     = level.Off
+	Error   = level.Error
+	Warning = level.Warning
+	Info    = level.Info
+	Debug   = level.Debug
+	Default = level.Default
 )
 
 type LogFileError struct {
@@ -37,7 +49,7 @@ func (e *LogFileError) Unwrap() error {
 	return e.err
 }
 
-func New(level level.Level, dirPath, fileName, prefix string, utc, terminal, microseconds bool) (logger *log_level.Logger, out *os.File, err error) {
+func New(level Level, dirPath, fileName, prefix string, utc, terminal, microseconds bool) (logger *Logger, out *os.File, err error) {
 	flags := log.Ldate | log.Ltime | log.Lmsgprefix
 	if utc {
 		flags = flags | log.LUTC
@@ -58,6 +70,4 @@ func New(level level.Level, dirPath, fileName, prefix string, utc, terminal, mic
 	return
 }
 
-var LevelParser = func(t reflect.Type, val string, params []string, kwParams map[string]string) (interface{}, error) {
-	return level.Parse(val)
-}
+var ParseLevel = level.Parse
