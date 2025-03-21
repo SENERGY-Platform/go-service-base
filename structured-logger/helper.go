@@ -23,21 +23,21 @@ import (
 )
 
 const (
-	levelDebug = "debug"
-	levelInfo  = "info"
-	levelWarn  = "warn"
-	levelError = "error"
+	LevelDebug = "debug"
+	LevelInfo  = "info"
+	LevelWarn  = "warn"
+	LevelError = "error"
 )
 
 func GetLevel(value string, defaultLevel slog.Leveler) slog.Leveler {
 	switch value {
-	case levelDebug:
+	case LevelDebug:
 		return slog.LevelDebug
-	case levelInfo:
+	case LevelInfo:
 		return slog.LevelInfo
-	case levelWarn:
+	case LevelWarn:
 		return slog.LevelWarn
-	case levelError:
+	case LevelError:
 		return slog.LevelError
 	default:
 		return defaultLevel
@@ -45,18 +45,18 @@ func GetLevel(value string, defaultLevel slog.Leveler) slog.Leveler {
 }
 
 const (
-	textHandlerSelector    = "text"
-	jsonHandlerSelector    = "json"
-	discardHandlerSelector = "discard"
+	TextHandlerSelector    = "text"
+	JsonHandlerSelector    = "json"
+	DiscardHandlerSelector = "discard"
 )
 
 func GetHandler(value string, writer io.Writer, opts *slog.HandlerOptions, defaultHandler slog.Handler) slog.Handler {
 	switch value {
-	case textHandlerSelector:
+	case TextHandlerSelector:
 		return slog.NewTextHandler(writer, opts)
-	case jsonHandlerSelector:
+	case JsonHandlerSelector:
 		return slog.NewJSONHandler(writer, opts)
-	case discardHandlerSelector:
+	case DiscardHandlerSelector:
 		return slog.DiscardHandler
 	default:
 		return defaultHandler
@@ -67,12 +67,12 @@ func GetLogFile(filePath string, filePerm os.FileMode) (io.WriteCloser, error) {
 	return os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePerm)
 }
 
-const projectKey = "project"
+const ProjectAttrKey = "project"
 
 func WithProjectAttr(name string, handler slog.Handler) slog.Handler {
 	if name != "" {
 		return handler.WithAttrs([]slog.Attr{{
-			Key:   projectKey,
+			Key:   ProjectAttrKey,
 			Value: slog.StringValue(name),
 		}})
 	}

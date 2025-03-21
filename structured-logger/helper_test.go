@@ -29,25 +29,25 @@ import (
 
 func TestGetLevel(t *testing.T) {
 	t.Run("debug", func(t *testing.T) {
-		lvl := GetLevel(levelDebug, slog.LevelWarn)
+		lvl := GetLevel(LevelDebug, slog.LevelWarn)
 		if lvl != slog.LevelDebug {
 			t.Errorf("expected %s, got %s", slog.LevelDebug, lvl)
 		}
 	})
 	t.Run("info", func(t *testing.T) {
-		lvl := GetLevel(levelInfo, slog.LevelWarn)
+		lvl := GetLevel(LevelInfo, slog.LevelWarn)
 		if lvl != slog.LevelInfo {
 			t.Errorf("expected %s, got %s", slog.LevelInfo, lvl)
 		}
 	})
 	t.Run("warn", func(t *testing.T) {
-		lvl := GetLevel(levelWarn, slog.LevelWarn)
+		lvl := GetLevel(LevelWarn, slog.LevelWarn)
 		if lvl != slog.LevelWarn {
 			t.Errorf("expected %s, got %s", slog.LevelWarn, lvl)
 		}
 	})
 	t.Run("error", func(t *testing.T) {
-		lvl := GetLevel(levelError, slog.LevelWarn)
+		lvl := GetLevel(LevelError, slog.LevelWarn)
 		if lvl != slog.LevelError {
 			t.Errorf("expected %s, got %s", slog.LevelError, lvl)
 		}
@@ -62,19 +62,19 @@ func TestGetLevel(t *testing.T) {
 
 func TestGetHandler(t *testing.T) {
 	t.Run("text", func(t *testing.T) {
-		h := GetHandler(textHandlerSelector, nil, nil, slog.Default().Handler())
+		h := GetHandler(TextHandlerSelector, nil, nil, slog.Default().Handler())
 		if reflect.TypeOf(h) != reflect.TypeOf(&slog.TextHandler{}) {
 			t.Errorf("expected %s, got %s", reflect.TypeOf(&slog.TextHandler{}), reflect.TypeOf(h))
 		}
 	})
 	t.Run("json", func(t *testing.T) {
-		h := GetHandler(jsonHandlerSelector, nil, nil, slog.Default().Handler())
+		h := GetHandler(JsonHandlerSelector, nil, nil, slog.Default().Handler())
 		if reflect.TypeOf(h) != reflect.TypeOf(&slog.JSONHandler{}) {
 			t.Errorf("expected %s, got %s", reflect.TypeOf(&slog.JSONHandler{}), reflect.TypeOf(h))
 		}
 	})
 	t.Run("discard", func(t *testing.T) {
-		h := GetHandler(discardHandlerSelector, nil, nil, slog.Default().Handler())
+		h := GetHandler(DiscardHandlerSelector, nil, nil, slog.Default().Handler())
 		if reflect.TypeOf(h) != reflect.TypeOf(slog.DiscardHandler) {
 			t.Errorf("expected %s, got %s", reflect.TypeOf(slog.DiscardHandler), reflect.TypeOf(h))
 		}
