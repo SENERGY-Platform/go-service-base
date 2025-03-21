@@ -1,4 +1,4 @@
-go-service-base/structured_logger
+go-service-base/structured-logger
 =======
 
 ![Image](https://img.shields.io/github/v/tag/SENERGY-Platform/go-service-base?filter=structured-logger%2A&label=latest)
