@@ -19,7 +19,7 @@ go-service-base/structured-logger
 
 	handler := GetHandler(os.Getenv("LOG_HANDLER"), os.Stdout, options, slog.Default().Handler())
 	handler = handler.WithAttrs([]slog.Attr{
-		{Key: attribute.Provider.ProtocolKey(), Value: slog.StringValue("my-project")},
+        slog.String(attribute.ProjectAttrKey, "my-project"),
 	})
 
 	Logger = slog.New(handler)
