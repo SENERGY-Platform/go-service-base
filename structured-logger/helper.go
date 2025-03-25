@@ -66,15 +66,3 @@ func GetHandler(value string, writer io.Writer, opts *slog.HandlerOptions, defau
 func GetLogFile(filePath string, filePerm os.FileMode) (io.WriteCloser, error) {
 	return os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePerm)
 }
-
-const ProjectAttrKey = "project"
-
-func WithProjectAttr(name string, handler slog.Handler) slog.Handler {
-	if name != "" {
-		return handler.WithAttrs([]slog.Attr{{
-			Key:   ProjectAttrKey,
-			Value: slog.StringValue(name),
-		}})
-	}
-	return handler
-}
