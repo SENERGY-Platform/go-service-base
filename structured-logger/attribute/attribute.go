@@ -28,7 +28,7 @@ const (
 	BodySizeAttrKey     = "body_size"
 	HeadersAttrKey      = "headers"
 	BodyAttrKey         = "body"
-	ErrorMessageAttrKey = "error_msg"
+	ErrorMessageAttrKey = "error"
 	StackTraceAttrKey   = "stack_trace"
 	ProjectAttrKey      = "project"
 	OrganizationAttrKey = "organization"
