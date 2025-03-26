@@ -24,12 +24,7 @@ const (
 	LatencyKey       = "latency"
 	PathKey          = "path"
 	ProtocolKey      = "protocol"
-	UserAgentKey     = "user_agent"
-	BodySizeKey      = "body_size"
-	HeadersKey       = "headers"
-	BodyKey          = "body"
 	ErrorKey         = "error"
-	StackTraceKey    = "stack_trace"
 	ProjectKey       = "project"
 	OrganizationKey  = "organization"
 	LogRecordTypeKey = "log_record_type"
@@ -39,78 +34,6 @@ const (
 	HttpAccessLogRecordTypeVal = "http_access"
 )
 
-var Provider = provider{}
-
-type provider struct{}
-
-func (p *provider) PathKey() string {
-	return PathKey
-}
-
-func (p *provider) StatusCodeKey() string {
-	return StatusCodeKey
-}
-
-func (p *provider) MethodKey() string {
-	return MethodKey
-}
-
-func (p *provider) LatencyKey() string {
-	return LatencyKey
-}
-
-func (p *provider) ProtocolKey() string {
-	return ProtocolKey
-}
-
-func (p *provider) UserAgentKey() string {
-	return UserAgentKey
-}
-
-func (p *provider) BodySizeKey() string {
-	return BodySizeKey
-}
-
-func (p *provider) HeadersKey() string {
-	return HeadersKey
-}
-
-func (p *provider) BodyKey() string {
-	return BodyKey
-}
-
-func (p *provider) ErrorKey() string {
-	return ErrorKey
-}
-
-func (p *provider) StackTraceKey() string {
-	return StackTraceKey
-}
-
-func (p *provider) ProjectKey() string {
-	return ProjectKey
-}
-
-func (p *provider) OrganizationKey() string {
-	return OrganizationKey
-}
-
-func (p *provider) LogRecordTypeKey() string {
-	return LogRecordTypeKey
-}
-
 func Error(err error) slog.Attr {
 	return slog.String(ErrorKey, err.Error())
-}
-
-func Project(val string) slog.Attr {
-	return slog.String(ProjectKey, val)
-}
-
-func Organization(val string) slog.Attr {
-	return slog.String(OrganizationKey, val)
-}
-
-func HttpAccessLogRecordType() slog.Attr {
-	return slog.String(LogRecordTypeKey, HttpAccessLogRecordTypeVal)
 }
