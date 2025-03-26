@@ -31,6 +31,7 @@ const (
 	ErrorMessageAttrKey = "error_msg"
 	StackTraceAttrKey   = "stack_trace"
 	ProjectAttrKey      = "project"
+	OrganizationAttrKey = "organization"
 	LogRecordTypeKey    = "log_record_type"
 )
 
@@ -140,6 +141,18 @@ func (p *provider) AppendProjectAttr(args []slog.Attr, val any) []slog.Attr {
 
 func (p *provider) ProjectAttr(val any) slog.Attr {
 	return slog.Attr{Key: ProjectAttrKey, Value: slog.AnyValue(val)}
+}
+
+func (p *provider) AppendOrganization(args []any, val any) []any {
+	return append(args, slog.Attr{Key: OrganizationAttrKey, Value: slog.AnyValue(val)})
+}
+
+func (p *provider) AppendOrganizationAttr(args []slog.Attr, val any) []slog.Attr {
+	return append(args, slog.Attr{Key: OrganizationAttrKey, Value: slog.AnyValue(val)})
+}
+
+func (p *provider) OrganizationAttr(val any) slog.Attr {
+	return slog.Attr{Key: OrganizationAttrKey, Value: slog.AnyValue(val)}
 }
 
 func (p *provider) AppendHttpAccessLogRecordType(args []any) []any {
