@@ -16,7 +16,7 @@
 
 package attributes
 
-var Provider = provider{}
+var Provider = &provider{}
 
 type provider struct{}
 
