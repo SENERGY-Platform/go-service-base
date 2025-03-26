@@ -31,6 +31,11 @@ const (
 	ErrorMessageAttrKey = "error_msg"
 	StackTraceAttrKey   = "stack_trace"
 	ProjectAttrKey      = "project"
+	LogRecordTypeKey    = "log_record_type"
+)
+
+const (
+	HttpAccessLogRecordType = "http_access"
 )
 
 var Provider = provider{}
@@ -125,10 +130,30 @@ func (p *provider) StackTraceKey() string {
 	return StackTraceAttrKey
 }
 
+func (p *provider) AppendProject(args []any, val any) []any {
+	return append(args, slog.Attr{Key: ProjectAttrKey, Value: slog.AnyValue(val)})
+}
+
 func (p *provider) AppendProjectAttr(args []slog.Attr, val any) []slog.Attr {
 	return append(args, slog.Attr{Key: ProjectAttrKey, Value: slog.AnyValue(val)})
 }
 
-func (p *provider) ProjectKey() string {
-	return ProjectAttrKey
+func (p *provider) ProjectAttr(val any) slog.Attr {
+	return slog.Attr{Key: ProjectAttrKey, Value: slog.AnyValue(val)}
+}
+
+func (p *provider) AppendHttpAccessLogRecordType(args []any) []any {
+	return append(args, slog.String(LogRecordTypeKey, HttpAccessLogRecordType))
+}
+
+func (p *provider) AppendHttpAccessLogRecordTypeAttr(args []slog.Attr) []slog.Attr {
+	return append(args, slog.String(LogRecordTypeKey, HttpAccessLogRecordType))
+}
+
+func (p *provider) HttpAccessLogRecordTypeAttr() slog.Attr {
+	return slog.String(LogRecordTypeKey, HttpAccessLogRecordType)
+}
+
+func (p *provider) HttpAccessLogRecordTypeKeyVal() (string, string) {
+	return LogRecordTypeKey, HttpAccessLogRecordType
 }
