@@ -16,8 +16,6 @@
 
 package attributes
 
-import "log/slog"
-
 const (
 	MethodKey        = "method"
 	StatusCodeKey    = "status"
@@ -33,7 +31,3 @@ const (
 const (
 	HttpAccessLogRecordTypeVal = "http_access"
 )
-
-func Error(err error) slog.Attr {
-	return slog.String(ErrorKey, err.Error())
-}
