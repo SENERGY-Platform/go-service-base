@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package structured_logger
+package struct_logger
 
 import (
 	"log/slog"
