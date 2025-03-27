@@ -29,5 +29,5 @@ const (
 )
 
 const (
-	HttpAccessLogRecordTypeVal = "http_access"
+	HttpAccessLogRecordTypeVal = "http-access"
 )
