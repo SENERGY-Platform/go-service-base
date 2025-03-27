@@ -17,7 +17,7 @@
 package struct_logger
 
 import (
-	"github.com/SENERGY-Platform/go-service-base/structured-logger/attributes"
+	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
 	"io"
 	"log/slog"
 	"os"
