@@ -1,7 +1,20 @@
 go-service-base/structured-logger
 =======
 
-![Image](https://img.shields.io/github/v/tag/SENERGY-Platform/go-service-base?filter=structured-logger%2A&label=latest)
+![Image](https://img.shields.io/github/v/tag/SENERGY-Platform/go-service-base?filter=struct-logger%2A&label=latest)
+
+### Levels
+
+    "debug"
+	"info"
+	"warn"
+	"error"
+
+### Handlers
+
+    "text"
+    "json"
+    "discard"
 
 ### Example
 
