@@ -16,7 +16,7 @@
 
 package srv_info_hdl
 
-type Info struct {
+type ServiceInfo struct {
 	Name      string `json:"name"`
 	Version   string `json:"version"`
 	UpTime    string `json:"up_time"`

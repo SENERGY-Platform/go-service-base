@@ -36,11 +36,11 @@ func New(name, version string) *Handler {
 	}
 }
 
-func (h *Handler) Info() Info {
+func (h *Handler) ServiceInfo() ServiceInfo {
 	upTime := time.Since(h.started)
 	var mStats runtime.MemStats
 	runtime.ReadMemStats(&mStats)
-	return Info{
+	return ServiceInfo{
 		Name:      h.name,
 		Version:   h.version,
 		UpTime:    upTime.String(),
