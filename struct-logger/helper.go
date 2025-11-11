@@ -17,10 +17,12 @@
 package struct_logger
 
 import (
-	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
 	"io"
 	"log/slog"
 	"os"
+	"strings"
+
+	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
 )
 
 const (
@@ -69,13 +71,15 @@ func GetLogFile(filePath string, filePerm os.FileMode) (io.WriteCloser, error) {
 }
 
 type Config struct {
-	Handler    string `json:"handler" env_var:"LOGGER_HANDLER"`
-	Level      string `json:"level" env_var:"LOGGER_LEVEL"`
-	TimeFormat string `json:"time_format" env_var:"LOGGER_TIME_FORMAT"`
-	TimeUtc    bool   `json:"time_utc" env_var:"LOGGER_TIME_UTC"`
-	FilePath   string `json:"file_path" env_var:"LOGGER_FILE_PATH"`
-	AddSource  bool   `json:"add_source" env_var:"LOGGER_ADD_SOURCE"`
-	AddMeta    bool   `json:"add_meta" env_var:"LOGGER_ADD_META"`
+	Handler        string `json:"handler" env_var:"LOGGER_HANDLER"`
+	Level          string `json:"level" env_var:"LOGGER_LEVEL"`
+	TimeFormat     string `json:"time_format" env_var:"LOGGER_TIME_FORMAT"`
+	TimeUtc        bool   `json:"time_utc" env_var:"LOGGER_TIME_UTC"`
+	FilePath       string `json:"file_path" env_var:"LOGGER_FILE_PATH"`
+	AddSource      bool   `json:"add_source" env_var:"LOGGER_ADD_SOURCE"`
+	AddMeta        bool   `json:"add_meta" env_var:"LOGGER_ADD_META"`
+	TrimFormat     string `json:"trim_format" env_var:"LOGGER_TRIM_FORMAT"`         //e.g. "20:[...]:10"; by default only used on the log message. if attributes should be trimmed, add them to TrimAttributes
+	TrimAttributes string `json:"trim_attributes" env_var:"LOGGER_TRIM_ATTRIBUTES"` //comma seperated list of attribute keys that should also be trimmed
 }
 
 func New(c Config, out io.Writer, organization, project string) *slog.Logger {
@@ -95,6 +99,19 @@ func New(c Config, out io.Writer, organization, project string) *slog.Logger {
 			attr = append(attr, slog.String(attributes.ProjectKey, project))
 		}
 		handler = handler.WithAttrs(attr)
+	}
+	if c.TrimFormat != "" {
+		trimAttributes := []string{}
+		if c.TrimAttributes != "" {
+			trimAttributes = strings.Split(c.TrimAttributes, ",")
+		}
+		trimHandler, err := ApplyTrimFormat(handler, c.TrimFormat, trimAttributes)
+		if err != nil {
+			result := slog.New(handler)
+			result.Error("unable to apply trim format to logger -> use logger without trim", "error", err)
+			return result
+		}
+		handler = trimHandler
 	}
 	return slog.New(handler)
 }
