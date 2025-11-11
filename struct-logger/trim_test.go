@@ -55,14 +55,14 @@ func TestLoggerWithTrim(t *testing.T) {
 			TrimFormat:     "3:[...]:2",
 			TrimAttributes: "foo,bar",
 			AddMeta:        true,
-		}, buff, "org", "trim")
+		}, buff, "org", "trim").With("project-group", "test")
 		withoutTrim := New(Config{
 			Handler:    JsonHandlerSelector,
 			Level:      "debug",
 			TimeFormat: time.RFC3339Nano,
 			TimeUtc:    true,
 			AddMeta:    true,
-		}, buff, "org", "notrim")
+		}, buff, "org", "notrim").With("project-group", "test")
 
 		for _, msg := range []string{
 			"abcdefghijklmnopqrstuvwxyz",
@@ -75,14 +75,14 @@ func TestLoggerWithTrim(t *testing.T) {
 		}
 
 		expected := []string{
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abc[...]yz","organization":"org","project":"trim","foo":"abc[...]yz","bar":"abc[...]yz","batz":"abcdefghijklmnopqrstuvwxyz","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghijklmnopqrstuvwxyz","organization":"org","project":"notrim","foo":"abcdefghijklmnopqrstuvwxyz","bar":"abcdefghijklmnopqrstuvwxyz","batz":"abcdefghijklmnopqrstuvwxyz","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abc[...]jk","organization":"org","project":"trim","foo":"abc[...]jk","bar":"abc[...]jk","batz":"abcdefghijk","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghijk","organization":"org","project":"notrim","foo":"abcdefghijk","bar":"abcdefghijk","batz":"abcdefghijk","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghij","organization":"org","project":"trim","foo":"abcdefghij","bar":"abcdefghij","batz":"abcdefghij","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghij","organization":"org","project":"notrim","foo":"abcdefghij","bar":"abcdefghij","batz":"abcdefghij","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghi","organization":"org","project":"trim","foo":"abcdefghi","bar":"abcdefghi","batz":"abcdefghi","num":13,"obj":{"bar":42,"foo":true}}`,
-			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghi","organization":"org","project":"notrim","foo":"abcdefghi","bar":"abcdefghi","batz":"abcdefghi","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abc[...]yz","organization":"org","project":"trim","project-group":"test","foo":"abc[...]yz","bar":"abc[...]yz","batz":"abcdefghijklmnopqrstuvwxyz","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghijklmnopqrstuvwxyz","organization":"org","project":"notrim","project-group":"test","foo":"abcdefghijklmnopqrstuvwxyz","bar":"abcdefghijklmnopqrstuvwxyz","batz":"abcdefghijklmnopqrstuvwxyz","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abc[...]jk","organization":"org","project":"trim","project-group":"test","foo":"abc[...]jk","bar":"abc[...]jk","batz":"abcdefghijk","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghijk","organization":"org","project":"notrim","project-group":"test","foo":"abcdefghijk","bar":"abcdefghijk","batz":"abcdefghijk","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghij","organization":"org","project":"trim","project-group":"test","foo":"abcdefghij","bar":"abcdefghij","batz":"abcdefghij","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghij","organization":"org","project":"notrim","project-group":"test","foo":"abcdefghij","bar":"abcdefghij","batz":"abcdefghij","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghi","organization":"org","project":"trim","project-group":"test","foo":"abcdefghi","bar":"abcdefghi","batz":"abcdefghi","num":13,"obj":{"bar":42,"foo":true}}`,
+			`{"time":"2000-01-01T00:00:00Z","level":"ERROR","msg":"abcdefghi","organization":"org","project":"notrim","project-group":"test","foo":"abcdefghi","bar":"abcdefghi","batz":"abcdefghi","num":13,"obj":{"bar":42,"foo":true}}`,
 		}
 		actual := []string{}
 		for out := range strings.Lines(buff.String()) {

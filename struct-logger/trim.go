@@ -83,9 +83,11 @@ func (this *TrimHandler) Handle(ctx context.Context, record slog.Record) error {
 }
 
 func (this *TrimHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return this.Parent.WithAttrs(attrs)
+	this.Parent = this.Parent.WithAttrs(attrs)
+	return this
 }
 
 func (this *TrimHandler) WithGroup(name string) slog.Handler {
-	return this.Parent.WithGroup(name)
+	this.Parent = this.Parent.WithGroup(name)
+	return this
 }
