@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
+	"github.com/SENERGY-Platform/go-service-base/struct-logger/handlers"
 )
 
 const (
@@ -48,17 +49,23 @@ func GetLevel(value string, defaultLevel slog.Leveler) slog.Leveler {
 }
 
 const (
-	TextHandlerSelector    = "text"
-	JsonHandlerSelector    = "json"
-	DiscardHandlerSelector = "discard"
+	TextHandlerSelector        = "text"
+	ColoredTextHandlerSelector = "colored-text"
+	JsonHandlerSelector        = "json"
+	ColoredJsonHandlerSelector = "colored-json"
+	DiscardHandlerSelector     = "discard"
 )
 
 func GetHandler(value string, writer io.Writer, opts *slog.HandlerOptions, defaultHandler slog.Handler) slog.Handler {
 	switch value {
 	case TextHandlerSelector:
 		return slog.NewTextHandler(writer, opts)
+	case ColoredTextHandlerSelector:
+		return handlers.NewColorHandler(writer, slog.NewTextHandler(writer, opts))
 	case JsonHandlerSelector:
 		return slog.NewJSONHandler(writer, opts)
+	case ColoredJsonHandlerSelector:
+		return handlers.NewColorHandler(writer, slog.NewJSONHandler(writer, opts))
 	case DiscardHandlerSelector:
 		return slog.DiscardHandler
 	default:
