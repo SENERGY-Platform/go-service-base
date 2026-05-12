@@ -29,7 +29,7 @@ type ContextHandler struct {
 	ctxValF ContextValueFunc
 }
 
-func NewContextHandler(baseHandler slog.Handler, ctxValFunc ContextValueFunc) *ContextHandler {
+func NewContextHandler(baseHandler slog.Handler, ctxValFunc ContextValueFunc) slog.Handler {
 	return &ContextHandler{
 		Handler: baseHandler,
 		ctxValF: ctxValFunc,
