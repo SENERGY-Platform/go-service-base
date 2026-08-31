@@ -71,9 +71,16 @@ func (h *OtelHandler) WithGroup(name string) slog.Handler {
 	}
 }
 
+// NewOpenTelemetryHandler wraps baseHandler so that every record logged with a
+// context carries the OpenTelemetry baggage of that context as attributes, and is
+// mirrored onto the active span as an event.
+//
+// The base handler is wrapped directly rather than through a ContextHandler:
+// OtelHandler.Handle already adds the baggage attributes itself, so a ContextHandler
+// underneath it added every one of them a second time and each baggage entry
+// appeared twice in the record.
 func NewOpenTelemetryHandler(baseHandler slog.Handler) slog.Handler {
-	return &OtelHandler{
-		handler: NewContextHandler(baseHandler, ctxValFunc)}
+	return &OtelHandler{handler: baseHandler}
 }
 
 func ctxValFunc(ctx context.Context) iter.Seq[slog.Attr] {
