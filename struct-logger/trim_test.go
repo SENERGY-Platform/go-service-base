@@ -18,6 +18,7 @@ package struct_logger
 
 import (
 	"bytes"
+	"log/slog"
 	"reflect"
 	"strings"
 	"testing"
@@ -92,4 +93,45 @@ func TestLoggerWithTrim(t *testing.T) {
 			t.Errorf("\ne %v\na %v", expected, actual)
 		}
 	})
+}
+
+func TestTrimHandlerWithKeepsLoggersApart(t *testing.T) {
+	buff := bytes.NewBufferString("")
+	handler, err := ApplyTrimFormat(slog.NewJSONHandler(buff, nil), "3:[...]:2", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	base := slog.New(handler)
+	first := base.With("type", "first")
+	second := base.With("type", "second")
+	grouped := base.WithGroup("group")
+
+	first.Info("a")
+	second.Info("b")
+	grouped.Info("c", "k", "v")
+	base.Info("d")
+
+	lines := strings.Split(strings.TrimSpace(buff.String()), "\n")
+	if len(lines) != 4 {
+		t.Fatalf("got %d lines, want 4: %s", len(lines), buff.String())
+	}
+	cases := []struct {
+		want    string
+		notWant []string
+	}{
+		{want: `"type":"first"`, notWant: []string{`"type":"second"`, `"group"`}},
+		{want: `"type":"second"`, notWant: []string{`"type":"first"`, `"group"`}},
+		{want: `"group":{"k":"v"}`, notWant: []string{`"type"`}},
+		{want: `"msg":"d"`, notWant: []string{`"type"`, `"group"`}},
+	}
+	for i, c := range cases {
+		if !strings.Contains(lines[i], c.want) {
+			t.Errorf("line %d = %s, want %s", i, lines[i], c.want)
+		}
+		for _, notWant := range c.notWant {
+			if strings.Contains(lines[i], notWant) {
+				t.Errorf("line %d = %s, carries %s of another logger", i, lines[i], notWant)
+			}
+		}
+	}
 }

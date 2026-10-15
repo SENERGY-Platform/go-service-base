@@ -82,12 +82,15 @@ func (this *TrimHandler) Handle(ctx context.Context, record slog.Record) error {
 	return this.Parent.Handle(ctx, updated)
 }
 
+// WithAttrs and WithGroup return a copy: loggers derived from the same logger share this handler.
 func (this *TrimHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	this.Parent = this.Parent.WithAttrs(attrs)
-	return this
+	result := *this
+	result.Parent = this.Parent.WithAttrs(attrs)
+	return &result
 }
 
 func (this *TrimHandler) WithGroup(name string) slog.Handler {
-	this.Parent = this.Parent.WithGroup(name)
-	return this
+	result := *this
+	result.Parent = this.Parent.WithGroup(name)
+	return &result
 }
