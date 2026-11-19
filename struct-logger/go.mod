@@ -1,10 +1,10 @@
 module github.com/SENERGY-Platform/go-service-base/struct-logger
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/gin-gonic/gin v1.12.0
-	go.opentelemetry.io/otel v1.44.0
+	go.opentelemetry.io/otel v1.47.0
 )
 
 require github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
-	go.opentelemetry.io/otel/trace v1.44.0
+	go.opentelemetry.io/otel/trace v1.47.0
 	golang.org/x/arch v0.22.0 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
